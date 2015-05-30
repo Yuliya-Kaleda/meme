@@ -6,16 +6,40 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 
 public class MainActivity extends ActionBarActivity {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
+    Button take;
+    Button choose;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        take = (Button) findViewById(R.id.take);
+        take.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        choose = (Button) findViewById(R.id.choose);
+
+        choose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+
 
         dispatchTakePictureIntent();
     }
