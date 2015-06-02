@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,13 +21,20 @@ import java.util.Date;
 
 public class MainActivity extends Activity {
 
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
-
     // The following two variables are for storing image info in case the app cycle changes
     private static final String BITMAP_STORAGE_KEY = "viewbitmap";
-    private static final String IMAGEVIEW_VISIBILITY_STORAGE_KEY = "imageviewVisibility";
+    private static final String IMAGEVIEW_VISIBILITY_STORAGE_KEY = "imageViewVisibility";
 
-    private ImageView mImageView;
+    private static final int SELECT_PICTURE = 1;
+    private static final int CREATE_PICTURE = 2;
+
+    Button take;
+    Button choose;
+    Button blackFrame;
+    ImageView image;
+    Uri imageUri;
+
+
     private Bitmap mImageBitmap;
 
     private String mCurrentPhotoPath;
@@ -39,22 +44,21 @@ public class MainActivity extends Activity {
 
     private AlbumStorageDirFactory mAlbumStorageDirFactory = null;
 
-    Button mTakeButton;
-    Button mChooseButton;
 
     // Photo album for this app
     private String getAlbumNAme() {
         return getString(R.string.album_name);
     }
-    private File getAlbumDir(){
+
+    private File getAlbumDir() {
         File storageDir = null;
 
-        if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             storageDir = mAlbumStorageDirFactory.getAlbumStorageDir(getAlbumNAme());
 
-            if (storageDir != null){
-                if(! storageDir.mkdirs()){
-                    if (! storageDir.exists()) {
+            if (storageDir != null) {
+                if (!storageDir.mkdirs()) {
+                    if (!storageDir.exists()) {
                         Log.d("CameraSample", "failed to create directory");
                     }
                 }
@@ -82,11 +86,11 @@ public class MainActivity extends Activity {
         return f;
     }
 
-    private void setPic(){
+    private void setPic() {
 
         // Gets the size of the ImageView
-        int targetW = mImageView.getWidth();
-        int targetH = mImageView.getHeight();
+        int targetW = image.getWidth();
+        int targetH = image.getHeight();
 
         // Get the size of the image
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -98,7 +102,7 @@ public class MainActivity extends Activity {
         // Calculate scaling needs
         int scaleFactor = 1;
         if ((targetW > 0) || (targetH > 0)) {
-            scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+            scaleFactor = Math.min(photoW / targetW, photoH / targetH);
         }
 
         // Set bitmap options to scale the image decode target
@@ -110,8 +114,8 @@ public class MainActivity extends Activity {
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
 
         // Set bitmap to ImageView
-        mImageView.setImageBitmap(bitmap);
-        mImageView.setVisibility(View.VISIBLE);
+        image.setImageBitmap(bitmap);
+        image.setVisibility(View.VISIBLE);
     }
 
     private void galleryAddPic() {
@@ -127,55 +131,71 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTakeButton = (Button) findViewById(R.id.take);
-        mTakeButton.setOnClickListener(new View.OnClickListener() {
+        take = (Button) findViewById(R.id.take);
+        take.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                // Ensure that there's a camera activity to handle the intent
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    // Create the File where the photo should go
+                    File photoFile = null;
+                    try {
+                        photoFile = createImageFile();
+                    } catch (IOException ex) {
+                        // Error occurred while creating the File
+                        ex.getMessage();
+                    }
+                    // Continue only if the File was successfully created
+                    if (photoFile != null) {
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                                Uri.fromFile(photoFile));
+                        startActivityForResult(takePictureIntent, CREATE_PICTURE);
+                    }
+                }
 
             }
         });
 
-        mChooseButton = (Button) findViewById(R.id.choose);
 
-        mChooseButton.setOnClickListener(new View.OnClickListener() {
+        choose.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
+
+                Log.d("MainActivity", "pressed");
+
+
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                Intent chooser = Intent.createChooser(intent, "Select Picture");
+                startActivityForResult(chooser, SELECT_PICTURE);
 
             }
         });
 
 
-
-        dispatchTakePictureIntent();
-    }
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
     }
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case SELECT_PICTURE:
+                Log.d("MainActivity", "I just selected a picture");
+                if (resultCode == RESULT_OK) {
+                    imageUri = data.getData();
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+                    Intent sentTo = new Intent(MainActivity.this, SecondActivity.class);
+                    sentTo.putExtra("uri", imageUri);
+                    startActivity(sentTo);
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+                }
+
+            case CREATE_PICTURE:
+                break;
         }
-
-        return super.onOptionsItemSelected(item);
     }
 }
