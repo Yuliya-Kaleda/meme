@@ -29,7 +29,6 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         choose = (Button) findViewById(R.id.choose);
-        take = ...
 
         if(choose!=null) {
 
