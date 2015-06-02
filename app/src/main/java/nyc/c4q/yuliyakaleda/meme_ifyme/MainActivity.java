@@ -24,6 +24,8 @@ import java.util.Date;
 public class MainActivity extends Activity {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
+
+    // The following two variables are for storing image info in case the app cycle changes
     private static final String BITMAP_STORAGE_KEY = "viewbitmap";
     private static final String IMAGEVIEW_VISIBILITY_STORAGE_KEY = "imageviewVisibility";
 
