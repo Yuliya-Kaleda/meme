@@ -21,10 +21,6 @@ import java.util.Date;
 
 public class MainActivity extends Activity {
 
-    // The following two variables are for storing image info in case the app cycle changes
-    private static final String BITMAP_STORAGE_KEY = "viewbitmap";
-    private static final String IMAGEVIEW_VISIBILITY_STORAGE_KEY = "imageViewVisibility";
-
     private static final int SELECT_PICTURE = 1;
     private static final int CREATE_PICTURE = 2;
 
@@ -145,7 +141,7 @@ public class MainActivity extends Activity {
                         photoFile = createImageFile();
                     } catch (IOException ex) {
                         // Error occurred while creating the File
-                        ex.getMessage();
+                        ex.printStackTrace();
                     }
                     // Continue only if the File was successfully created
                     if (photoFile != null) {
@@ -195,6 +191,12 @@ public class MainActivity extends Activity {
                 }
 
             case CREATE_PICTURE:
+                Log.d("MainActivity", "I just took a picture");
+                if(resultCode == RESULT_OK) {
+                    imageUri = data.getData();
+
+
+                }
                 break;
         }
     }
