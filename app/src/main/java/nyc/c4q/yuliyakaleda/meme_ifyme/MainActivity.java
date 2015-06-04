@@ -49,11 +49,16 @@ public class MainActivity extends Activity {
     Button blackFrame;
     ImageView image;
     Uri imageUri;
-    private AlbumStorageDirFactory mAlbumStorageDirFactory = null;
+
+    private AlbumStorageDirFactory mAlbumStorageDirFactory;
+
+
     // Photo album for this app
     private String getAlbumNAme() {
         return getString(R.string.album_name);
     }
+
+
     private File getAlbumDir() {
         File storageDir = null;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
@@ -61,7 +66,7 @@ public class MainActivity extends Activity {
             if (storageDir != null) {
                 if (!storageDir.mkdirs()) {
                     if (!storageDir.exists()) {
-                        Log.d("CameraSample", "failed to create directory");
+                        Log.d("MemeApp", "failed to create directory"); //Directory name
                     }
                 }
             }
@@ -74,6 +79,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Take a picture button
         take = (Button) findViewById(R.id.take);
         take.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,6 +92,8 @@ public class MainActivity extends Activity {
                 startActivityForResult(taker, CREATE_PICTURE);
             }
         });
+
+        //Choose a picture from photo gallery button
         choose = (Button) findViewById(R.id.choose);
         choose.setOnClickListener(new View.OnClickListener() {
             @Override

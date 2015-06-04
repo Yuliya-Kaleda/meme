@@ -133,6 +133,8 @@ public class SecondActivity extends Activity {
                     }
                 }
             });
+
+
 //
             share.setOnClickListener(new View.OnClickListener() {
                 @Override
