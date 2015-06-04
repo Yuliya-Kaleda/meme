@@ -1,28 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-<<<<<<< HEAD
     android:layout_height="match_parent"
     android:background="#3F2860">
-=======
-    android:layout_height="match_parent">
->>>>>>> ac50a09f790788e3703b598542182e88298ca73a
 
-    <LinearLayout
-        android:id="@+id/Textdialog"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
 
-<<<<<<< HEAD
+    <!--<LinearLayout-->
+        <!--android:id="@+id/Textdialog"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="vertical">-->
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
 
-=======
->>>>>>> ac50a09f790788e3703b598542182e88298ca73a
         <ImageView
             android:id="@+id/image1"
             android:layout_width="match_parent"
@@ -30,14 +24,14 @@
             android:layout_weight="5"
             android:scaleType="fitXY" />
 
-
-
         <TextView
             android:id="@+id/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"/>
         </LinearLayout>
+
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -67,5 +61,6 @@
                 android:background="@drawable/shape2"/>
         </LinearLayout>
 
-    </LinearLayout>
+    <!--</LinearLayout>-->
+
 </RelativeLayout>

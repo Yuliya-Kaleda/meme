@@ -4,7 +4,9 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="take_a_picture">Take a picture</string>
-    <string name="choose_a_picture">Choose</string>
+    <string name="choose_a_picture">Choose from existing</string>
+    <string name="album_name">CameraSample</string>
+    <string name="cannot">Cannot</string>
 
 
 </resources>

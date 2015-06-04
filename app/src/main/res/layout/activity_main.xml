@@ -28,7 +28,6 @@
         android:id="@+id/choose"
         android:textColor="#ffff"
         android:fontFamily="Roboto"
-        android:layout_below="@+id/take"
         android:background="@drawable/greenshape"
         android:layout_centerHorizontal="true" />
 
