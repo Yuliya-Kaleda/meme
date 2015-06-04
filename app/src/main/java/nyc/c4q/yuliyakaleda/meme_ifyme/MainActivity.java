@@ -30,14 +30,6 @@ public class MainActivity extends Activity {
     ImageView image;
     Uri imageUri;
 
-
-    private Bitmap mImageBitmap;
-
-    private String mCurrentPhotoPath;
-
-    private static final String JPEG_FILE_PREFIX = "IMG_";
-    private static final String JPEG_FILE_SUFFIX = ".jpg";
-
     private AlbumStorageDirFactory mAlbumStorageDirFactory = null;
 
 
@@ -66,62 +58,6 @@ public class MainActivity extends Activity {
         return storageDir;
     }
 
-    // Create an image file name
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = JPEG_FILE_PREFIX + timeStamp + "_";
-        File albumF = getAlbumDir();
-        File imageF = File.createTempFile(imageFileName, JPEG_FILE_SUFFIX, albumF);
-        return imageF;
-    }
-
-    private File setUpPhotoFile() throws IOException {
-        File f = createImageFile();
-        mCurrentPhotoPath = f.getAbsolutePath();
-
-        return f;
-    }
-
-    private void setPic() {
-
-        // Gets the size of the ImageView
-        int targetW = image.getWidth();
-        int targetH = image.getHeight();
-
-        // Get the size of the image
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // Calculate scaling needs
-        int scaleFactor = 1;
-        if ((targetW > 0) || (targetH > 0)) {
-            scaleFactor = Math.min(photoW / targetW, photoH / targetH);
-        }
-
-        // Set bitmap options to scale the image decode target
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
-
-        // Decode the JPEG file into a Bitmap
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-
-        // Set bitmap to ImageView
-        image.setImageBitmap(bitmap);
-        image.setVisibility(View.VISIBLE);
-    }
-
-    private void galleryAddPic() {
-        Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
-        File f = new File(mCurrentPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,29 +68,16 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
 
-                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                // Ensure that there's a camera activity to handle the intent
-                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                    // Create the File where the photo should go
-                    File photoFile = null;
-                    try {
-                        photoFile = createImageFile();
-                    } catch (IOException ex) {
-                        // Error occurred while creating the File
-                        ex.printStackTrace();
-                    }
-                    // Continue only if the File was successfully created
-                    if (photoFile != null) {
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                                Uri.fromFile(photoFile));
-                        startActivityForResult(takePictureIntent, CREATE_PICTURE);
-                    }
-                }
+                Intent taker = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                imageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),"fname_" +
+                        String.valueOf(System.currentTimeMillis()) + ".jpg"));
+                taker.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(taker, CREATE_PICTURE);
 
             }
         });
 
-
+        choose = (Button) findViewById(R.id.choose);
         choose.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -195,6 +118,16 @@ public class MainActivity extends Activity {
                 if(resultCode == RESULT_OK) {
                     imageUri = data.getData();
 
+
+                    Bundle extras = data.getExtras();
+
+                    Log.e("URI",imageUri.toString());
+
+                    Bitmap bmp = (Bitmap) extras.get("data");
+
+                    Intent sentTo = new Intent(MainActivity.this, SecondActivity.class);
+                    sentTo.putExtra("uri", imageUri);
+                    startActivity(sentTo);
 
                 }
                 break;
