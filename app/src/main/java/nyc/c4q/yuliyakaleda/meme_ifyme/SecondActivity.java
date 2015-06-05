@@ -3,8 +3,11 @@ package nyc.c4q.yuliyakaleda.meme_ifyme;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
@@ -34,10 +37,11 @@ public class SecondActivity extends Activity {
     TextView tv;
     Button share;
     Uri myUri;
-    private android.widget.RelativeLayout.LayoutParams layoutParams;
+    Bitmap bm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(MainActivity.TAG, "SecondActivity.onCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.image);
 
@@ -47,93 +51,12 @@ public class SecondActivity extends Activity {
 
         //get the uri from the intent sent from MainActivity
         Intent intent = getIntent();
-        myUri = intent.getParcelableExtra("uri");
 
-        image.setImageURI(myUri);
-        tv.setText("hello world");
-
-//        tv.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View v) {
-//                ClipData.Item item = new ClipData.Item((CharSequence)v.getTag());
-//                String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-//
-//                ClipData dragData = new ClipData(v.getTag().toString(),mimeTypes, item);
-//                View.DragShadowBuilder myShadow = new View.DragShadowBuilder(tv);
-//
-//                v.startDrag(dragData,myShadow,null,0);
-//                return true;
-//            }
-//        });
+        Log.d(MainActivity.TAG, String.format("SecondActivity.onCreate() intent:", intent));
+        bm = intent.getParcelableExtra("bitmap");
+        image.setImageBitmap(bm);
 
 
-        tv.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-                switch (event.getAction()) {
-                    case DragEvent.ACTION_DRAG_STARTED:
-                        layoutParams = (RelativeLayout.LayoutParams) v.getLayoutParams();
-                        Log.d("y", "Action is DragEvent.ACTION_DRAG_STARTED");
-
-                        // Do nothing
-                        break;
-
-                    case DragEvent.ACTION_DRAG_ENTERED:
-                        Log.d("y", "Action is DragEvent.ACTION_DRAG_ENTERED");
-                        int x_cord = (int) event.getX();
-                        int y_cord = (int) event.getY();
-                        break;
-
-                    case DragEvent.ACTION_DRAG_EXITED:
-                        Log.d("y", "Action is DragEvent.ACTION_DRAG_EXITED");
-                        x_cord = (int) event.getX();
-                        y_cord = (int) event.getY();
-                        layoutParams.leftMargin = x_cord;
-                        layoutParams.topMargin = y_cord;
-                        v.setLayoutParams(layoutParams);
-                        tv.setText("h");
-                        break;
-
-                    case DragEvent.ACTION_DRAG_LOCATION:
-                        Log.d("y", "Action is DragEvent.ACTION_DRAG_LOCATION");
-                        x_cord = (int) event.getX();
-                        y_cord = (int) event.getY();
-                        break;
-
-                    case DragEvent.ACTION_DRAG_ENDED:
-                        Log.d("y", "Action is DragEvent.ACTION_DRAG_ENDED");
-
-                        // Do nothing
-                        break;
-
-                    case DragEvent.ACTION_DROP:
-                        Log.d("y", "ACTION_DROP event");
-                        tv.getX();
-                        tv.getY();
-
-                        break;
-                    default:
-                        break;
-                }
-                return true;
-            }
-        });
-
-        tv.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    ClipData data = ClipData.newPlainText("", "");
-                    View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(tv);
-
-                    tv.startDrag(data, shadowBuilder, tv, 0);
-                    tv.setVisibility(View.INVISIBLE);
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
 
         //
         share.setOnClickListener(new View.OnClickListener() {
