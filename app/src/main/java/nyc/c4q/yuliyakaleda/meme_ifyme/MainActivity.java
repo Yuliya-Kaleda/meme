@@ -34,34 +34,6 @@ public class MainActivity extends Activity {
     Bitmap bitmap;
 
 
-    private AlbumStorageDirFactory mAlbumStorageDirFactory = null;
-
-
-    // Photo album for this app
-    private String getAlbumNAme() {
-        return getString(R.string.album_name);
-    }
-
-    private File getAlbumDir() {
-        File storageDir = null;
-
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            storageDir = mAlbumStorageDirFactory.getAlbumStorageDir(getAlbumNAme());
-
-            if (storageDir != null) {
-                if (!storageDir.mkdirs()) {
-                    if (!storageDir.exists()) {
-                        Log.d(TAG, "failed to create directory");
-                    }
-                }
-            }
-        } else {
-            Log.v(TAG, "External storage is not mounted READ/WRITE.");
-        }
-
-        return storageDir;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
