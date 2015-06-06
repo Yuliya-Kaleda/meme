@@ -56,12 +56,21 @@ public class SecondActivity extends Activity {
 
         motivation = (Button) findViewById(R.id.motivation);
         motivation.setOnClickListener(new View.OnClickListener() {
-                                          @Override
-                                          public void onClick(View view) {
-                                              Intent intent = new Intent();
-                                                 imageBackground.setVisibility(View.VISIBLE);
+                  @Override
+                       public void onClick(View view) {
+                         Intent intent = new Intent();
+                         imageBackground.setVisibility(View.VISIBLE);
                                           }
                                       });
+
+        vanilla = (Button) findViewById(R.id.vanilla);
+        vanilla.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                imageBackground.setVisibility(View.INVISIBLE);
+            }
+        });
 
 
 

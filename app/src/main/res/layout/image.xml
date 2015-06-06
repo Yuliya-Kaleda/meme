@@ -17,7 +17,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="40dp"
             android:layout_weight="1"
-            android:text="Choose 'Motivation' to add a black background, or 'Vanilla' to clear to edit black background. "
+            android:text="Choose 'Motivation' to add a black background, or choose 'Vanilla' to clear the black background. "
             android:layout_marginLeft="15dp"
             android:textColor="#ffff"
             android:textAlignment="center"/>
@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="40dp"
-            android:text="Click on the text to edit the text on the image"
+            android:text="Click on  to edit the text on the image"
             android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:layout_marginLeft="15dp"
