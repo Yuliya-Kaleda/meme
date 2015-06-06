@@ -20,7 +20,6 @@ import java.util.Date;
 
 public class MainActivity extends Activity {
 
-
     private static final int SELECT_PICTURE = 1;
     private static final int REQUEST_IMAGE_CAPTURE = 2;
     public static final String TAG = "MEME_ACTIVITY";

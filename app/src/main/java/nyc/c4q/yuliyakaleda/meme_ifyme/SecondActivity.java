@@ -83,7 +83,7 @@ public class SecondActivity extends Activity {
        image = (ImageView) findViewById(R.id.image1);
        //tv = (RelativeLayout) findViewById(R.id.merge_image);
        share = (Button) findViewById(R.id.share_button);
-//get the uri from the intent sent from MainActivity
+      //get the uri from the intent sent from MainActivity
         Intent intent = getIntent();
         Log.d(MainActivity.TAG, String.format("SecondActivity.onCreate() intent:", intent));
         bm = intent.getParcelableExtra("bitmap");
@@ -127,15 +127,13 @@ public class SecondActivity extends Activity {
 //        });
 
 
-
     }
-    //method to share an image via social networks
+        //method to share an image via social networks
     public void shareVia() {
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         sharingIntent.setType("image/jpeg");
         sharingIntent.putExtra(Intent.EXTRA_STREAM, myUri);
        // startActivity(Intent.createChooser(se(getResources((R.id.merge_image));
-
         startActivity(Intent.createChooser(sharingIntent, "Share image using"));
     }
 }

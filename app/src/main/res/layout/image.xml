@@ -61,11 +61,9 @@
             android:layout_marginTop="230dp"
             android:id="@+id/black_background"
             android:visibility="gone"
-            android:layout_width="match_parent"
+            android:layout_width="200dp"
             android:layout_height="150dp"
             android:src="@drawable/black_background"/>
-
-
 
         <EditText
             android:layout_width="match_parent"
@@ -87,7 +85,7 @@
             android:layout_marginTop="150dp"
             android:textSize="30sp"/>
         <EditText
-            android:layout_width="100dp"
+            android:layout_width="match_parent"
             android:layout_height="70dp"
             android:id="@+id/addText3"
             android:textColorHint="#ffff"
@@ -112,13 +110,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/shape2"/>
+
         <Button
             android:id="@+id/motivation"
             android:text="Motivation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-
             android:background="@drawable/shape2"
             />
 
