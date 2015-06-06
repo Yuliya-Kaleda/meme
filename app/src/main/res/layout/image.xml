@@ -60,6 +60,7 @@
         <ImageView
             android:layout_marginTop="230dp"
             android:id="@+id/black_background"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:src="@drawable/black_background"/>
@@ -112,7 +113,7 @@
             android:layout_weight="1"
             android:background="@drawable/shape2"/>
         <Button
-            android:id="@+id/background"
+            android:id="@+id/motivation"
             android:text="Motivation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -122,7 +123,7 @@
             />
 
         <Button
-            android:id="@+id/add_text_button"
+            android:id="@+id/vanilla"
             android:text="Vanilla"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
