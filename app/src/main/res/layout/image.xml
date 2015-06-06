@@ -1,9 +1,108 @@
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
-    android:orientation="horizontal"
-    android:background="#000000">
+    android:layout_height="match_parent"
+    android:background="#3F2860">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="#3F2860"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginTop="40dp"
+            android:layout_weight="1"
+            android:text="Choose 'Motivation' to add a black background, or 'Vanilla' to clear to edit black background. "
+            android:layout_marginLeft="15dp"
+            android:textColor="#ffff"
+            android:textAlignment="center"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="40dp"
+            android:text="Click on the text to edit the text on the image"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="15dp"
+
+            android:textColor="#ffff"
+            android:textAlignment="center"/>
+    </LinearLayout>
+
+    <!--Image-->
+
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#ffff"
+        android:layout_weight="10"
+        android:id="@+id/merge_image">
+
+
+        <ImageView
+            android:background="#f42"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:scaleType="fitXY"
+            android:baseline="@dimen/abc_text_size_medium_material"
+            android:baselineAlignBottom="true"
+            android:src="@drawable/border"
+            android:visibility="visible"
+            android:id="@+id/image1"/>
+        <ImageView
+            android:layout_marginTop="230dp"
+            android:id="@+id/black_background"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:src="@drawable/black_background"/>
+
+
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/addText1"
+            android:text="add text"
+            android:gravity="center_horizontal"
+            android:visibility="invisible"
+            android:layout_marginTop="30dp"
+            android:textSize="30sp"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/addText2"
+            android:text="add text"
+            android:gravity="center_horizontal"
+            android:textAlignment="center"
+            android:visibility="invisible"
+            android:layout_marginTop="150dp"
+            android:textSize="30sp"/>
+        <EditText
+            android:layout_width="100dp"
+            android:layout_height="70dp"
+            android:id="@+id/addText3"
+            android:textColorHint="#ffff"
+            android:textAlignment="center"
+            android:gravity="center_horizontal"
+            android:visibility="invisible"
+            android:layout_marginTop="250dp"
+            android:textSize="30sp"/>
+    </RelativeLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#3F2860"
+        android:layout_weight="1"
+        >
 
         <Button
             android:id="@+id/share_button"
@@ -14,46 +113,24 @@
             android:background="@drawable/shape2"/>
         <Button
             android:id="@+id/background"
-            android:text="Background"
+            android:text="Motivation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/shape2"/>
+
+            android:background="@drawable/shape2"
+            />
 
         <Button
             android:id="@+id/add_text_button"
-            android:text="Text"
+            android:text="Vanilla"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/shape2"/>
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="100dp"
-            android:textColorLink="#fffff"/>
+    </LinearLayout>
 
 
 
-    <ImageView
-        android:id="@+id/image1"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginTop="250dp"
-        />
-
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"/>
-
-    <!--<LinearLayout-->
-        <!--android:id="@+id/Textdialog"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="vertical">-->
-    <!--</LinearLayout>-->
-
-</RelativeLayout>
+</LinearLayout>
