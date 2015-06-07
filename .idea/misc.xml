@@ -6,7 +6,6 @@
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
-<<<<<<< HEAD
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
     <OptionsSetting value="true" id="Remove" />
@@ -16,28 +15,10 @@
     <OptionsSetting value="true" id="Edit" />
     <ConfirmationsSetting value="0" id="Add" />
     <ConfirmationsSetting value="0" id="Remove" />
-=======
-  <component name="ProjectInspectionProfilesVisibleTreeState">
-    <entry key="Project Default">
-      <profile-state>
-        <expanded-state>
-          <State>
-            <id />
-          </State>
-        </expanded-state>
-        <selected-state>
-          <State>
-            <id>Abstraction issues</id>
-          </State>
-        </selected-state>
-      </profile-state>
-    </entry>
->>>>>>> 096f1a8c0d601c19cd41866511a9a97efeb990d7
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" assert-keyword="true" jdk-15="true" project-jdk-name="1.7" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
-<<<<<<< HEAD
   <component name="RunManager">
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
@@ -108,6 +89,7 @@
       <patterns />
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="false" />
+        <option name="Make" enabled="true" />
       </method>
     </configuration>
     <list size="0" />
@@ -128,8 +110,6 @@
       <Port>5050</Port>
     </configuration>
   </component>
-=======
->>>>>>> 096f1a8c0d601c19cd41866511a9a97efeb990d7
   <component name="masterDetails">
     <states>
       <state key="ProjectJDKs.UI">
@@ -144,20 +124,6 @@
           </splitter-proportions>
         </settings>
       </state>
-<<<<<<< HEAD
-=======
-      <state key="ScopeChooserConfigurable.UI">
-        <settings>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
->>>>>>> 096f1a8c0d601c19cd41866511a9a97efeb990d7
     </states>
   </component>
 </project>

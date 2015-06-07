@@ -10,14 +10,24 @@
     tools:context=".MainActivity"
     android:background="#3F2860">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="80sp"
+        android:gravity="center"
+        android:layout_marginTop="50dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="#ffffff"
+        android:text="Meme it!"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Take"
+        android:text=" Take a pic "
+        android:gravity="center"
         android:id="@+id/take"
-        android:textColor="#ffff"
-
+        android:textColor="#ffffff"
+        android:textSize="50sp"
         android:fontFamily="Roboto"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
@@ -25,11 +35,13 @@
 
     <Button
         android:layout_below="@id/take"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="60dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose"
+        android:gravity="center"
+        android:text=" Choose a pic "
         android:id="@+id/choose"
+        android:textSize="50sp"
         android:textColor="#ffff"
         android:fontFamily="Roboto"
         android:background="@drawable/greenshape"
