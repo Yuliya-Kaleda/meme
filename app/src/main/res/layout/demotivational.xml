@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <ImageView
+        android:id="@+id/image_black_back"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="40dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:inputType="text"
+        android:layout_height="wrap_content"
+        android:id="@+id/line_top"
+        android:text="@string/top_text"
+        android:textColor="#ff0000"
+        android:gravity="center_horizontal"
+        android:singleLine="true"
+        android:cursorVisible="true"
+        android:textSize="50sp"
+        android:layout_above="@+id/line_bottom"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/line_bottom"
+        android:text="@string/bottom_text"
+        android:singleLine="true"
+        android:inputType="text"
+        android:textColor="#ff0000"
+        android:cursorVisible="true"
+        android:gravity="center_horizontal"
+        android:textSize="12sp"
+        android:layout_alignBottom="@+id/image_black_back"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="false" />
+
+    <Button
+        android:id="@+id/share_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/share_via"
+        android:layout_alignRight="@+id/image_black_back"/>
+
+</RelativeLayout>

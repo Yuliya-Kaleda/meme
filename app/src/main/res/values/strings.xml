@@ -6,7 +6,12 @@
     <string name="take_a_picture">Take a picture</string>
     <string name="choose_a_picture">Choose from existing</string>
     <string name="album_name">CameraSample</string>
-    <string name="cannot">Cannot</string>
+    <string name="bottom_text">add text</string>
+    <string name="top_text">add text</string>
+    <string name="share_via">Share Via</string>
+    <string name="demotivation">demotivation</string>
+    <string name="vanilla">Vanilla</string>
+    <string name="share_button">Share</string>
 
 
 </resources>
