@@ -73,7 +73,7 @@ public class MainActivity extends Activity {
                     try {
                         imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
 // http://stackoverflow.com/a/10281667, image is too big so you gotta resize
-                        imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 100, 100, true);
+                        imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 200, 200, true);
                     } catch (IOException e) {
                         Log.d(TAG, e.getMessage());
                     }

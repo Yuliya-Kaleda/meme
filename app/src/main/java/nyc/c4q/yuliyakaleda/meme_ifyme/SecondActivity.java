@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -34,6 +36,9 @@ import java.util.Date;
  * Created by July on 5/31/15.
  */
 public class SecondActivity extends Activity {
+    private static final String TAG = SecondActivity.class.getSimpleName();
+
+    public static final String MY_FILE = "photo";
     ImageView image;
     ViewGroup tv;
     Button share;
@@ -45,7 +50,6 @@ public class SecondActivity extends Activity {
     EditText text2;
     EditText text3;
     ImageView imageBackground;
-
 
 
     @Override
@@ -77,23 +81,25 @@ public class SecondActivity extends Activity {
         text1 =(EditText) findViewById(R.id.addText1);
         text2 =(EditText) findViewById(R.id.addText2);
         text3 =(EditText) findViewById(R.id.addText3);
-        imageBackground=(ImageView) findViewById(R.id.black_background);
 
 
        image = (ImageView) findViewById(R.id.image1);
        //tv = (RelativeLayout) findViewById(R.id.merge_image);
        share = (Button) findViewById(R.id.share_button);
-      //get the uri from the intent sent from MainActivity
+       //get the uri from the intent sent from MainActivity
         Intent intent = getIntent();
         Log.d(MainActivity.TAG, String.format("SecondActivity.onCreate() intent:", intent));
         bm = intent.getParcelableExtra("bitmap");
+        int height = bm.getHeight();
+        int width = bm.getWidth();
+        bm = Bitmap.createScaledBitmap(bm, height, width, false);
         image.setImageBitmap(bm);
 
 
-//     // make a screen shot of our layout to convert into an image to share
+     // make a screen shot of our layout to convert into an image to share
 //        View u = findViewById(R.id.scroll);
 //        u.setDrawingCacheEnabled(true);
-//        ScrollView z = (ScrollView) findViewById(R.id.scroll);
+//        ScrollView z = (ScrollView) findViewById(R.id.screen);
 //        int totalHeight = z.getChildAt(0).getHeight();
 //        int totalWidth = z.getChildAt(0).getWidth();
 //        u.layout(0, 0, totalWidth, totalHeight);
@@ -101,6 +107,7 @@ public class SecondActivity extends Activity {
 //        Bitmap b = Bitmap.createBitmap(u.getDrawingCache());
 //        u.setDrawingCacheEnabled(false);
 
+//
 //        //Save bitmap
 //        String extr = Environment.getExternalStorageDirectory().toString() +   File.separator + "Folder";
 //        String fileName = new SimpleDateFormat("yyyyMMddhhmm'_report.jpg'").format(new Date());
@@ -119,20 +126,59 @@ public class SecondActivity extends Activity {
 //            // TODO Auto-generated catch block
 //            e.printStackTrace();
 //        }
-//        share.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                shareVia();
-//            }
-//        });
+//
+
+//        String path = Environment.getExternalStorageDirectory().toString();
+//        OutputStream fOut = null;
+//        File file = new File(path, "FitnessGirl.jpg"); // the File to save to
+//        try {
+//            fOut = new FileOutputStream(file);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//
+//        b.compress(Bitmap.CompressFormat.JPEG, 85, fOut); // saving the Bitmap to a file compressed as a JPEG with 85% compression rate
+//        try {
+//            fOut.flush();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//            fOut.close(); // do not forget to close the stream
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        try {
+//            MediaStore.Images.Media.insertImage(getContentResolver(),file.getAbsolutePath(),file.getName(),file.getName());
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+
+
+        share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String filename = "sharedImage";
+                try {
+                    File tempFile = File.createTempFile(filename, "jpg");
+                    FileOutputStream fos = new FileOutputStream(tempFile);
+                    bm.compress(Bitmap.CompressFormat.JPEG,100, fos);
+                    shareVia(tempFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            }
+        });
 
 
     }
-        //method to share an image via social networks
-    public void shareVia() {
+    //method to share an image via social networks
+    public void shareVia(File attachment) {
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         sharingIntent.setType("image/jpeg");
-        sharingIntent.putExtra(Intent.EXTRA_STREAM, myUri);
+        sharingIntent.putExtra(Intent.EXTRA_STREAM, attachment.toURI());
        // startActivity(Intent.createChooser(se(getResources((R.id.merge_image));
         startActivity(Intent.createChooser(sharingIntent, "Share image using"));
     }

@@ -3,13 +3,13 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#3F2860">
+    android:background="#000000">
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:background="#3F2860"
+        android:background="#000000"
         android:layout_weight="1">
 
         <TextView
@@ -37,33 +37,25 @@
     <!--Image-->
 
     <RelativeLayout
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:background="#ffff"
+        android:layout_height="match_parent"
         android:layout_weight="10"
-        android:id="@+id/merge_image">
+        android:id="@+id/scroll"
+        android:background="#000000">
 
 
         <ImageView
-            android:background="#f42"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
             android:scaleType="fitXY"
-            android:baseline="@dimen/abc_text_size_medium_material"
-            android:baselineAlignBottom="true"
-            android:src="@drawable/border"
-            android:visibility="visible"
-            android:id="@+id/image1"/>
-        <ImageView
-            android:layout_marginTop="230dp"
-            android:id="@+id/black_background"
-            android:visibility="gone"
-            android:layout_width="200dp"
-            android:layout_height="150dp"
-            android:src="@drawable/black_background"/>
+            android:id="@+id/image1"
+       />
+
 
         <EditText
             android:layout_width="match_parent"
