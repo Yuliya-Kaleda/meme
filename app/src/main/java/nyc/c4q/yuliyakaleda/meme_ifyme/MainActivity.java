@@ -55,9 +55,16 @@ public class MainActivity extends Activity {
                 }
                 break;
         }
-        Intent sentTo = new Intent(MainActivity.this, SecondActivity.class);
-        sentTo.putExtra("bitmap", imageBitmap);
-        startActivity(sentTo);
+
+        //null pointer exception occurred
+        //pressing the back button to go back to main activity screen
+        //made the app crash when no picture was taken/selected in camera/gallery
+        //added below condition so second activity starts only when there is an image stored
+        if (imageBitmap != null) {
+            Intent sentTo = new Intent(MainActivity.this, SecondActivity.class);
+            sentTo.putExtra("bitmap", imageBitmap);
+            startActivity(sentTo);
+        }
     }
 
     public void setEventListener(boolean setFlag) {
