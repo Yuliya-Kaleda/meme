@@ -2,11 +2,13 @@ package nyc.c4q.yuliyakaleda.meme_ifyme;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +32,9 @@ public class SecondActivity extends Activity {
     private static final String PICTURE = "pict";
     private static final String DEMO = "demo";
     private static final String VAN = "van";
+    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+    private static final String sharedpref = "nyc.c4q.fattyduck.meme.sharedpref";
+    private String option= "action";
 
     private ImageView image;
     private EditText edTop;
@@ -46,10 +51,13 @@ public class SecondActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setLayoutView(savedInstanceState);
         initializeViews();
-        getIntentInfo();
+        if (loadString().equals("take")) {
+            Intent openCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(openCamera, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+        }
+
         saveData(savedInstanceState);
         setEventListener(true);
     }
@@ -107,16 +115,6 @@ public class SecondActivity extends Activity {
         share = (Button) findViewById(R.id.share_button);
         edBottom = (EditText) findViewById(R.id.line_bottom);
         edTop = (EditText) findViewById(R.id.line_top);
-    }
-
-    public void getIntentInfo() {
-        Intent intent = getIntent();
-        bm = intent.getParcelableExtra("bitmap");
-        image.setImageBitmap(bm);
-
-        int height = bm.getHeight();
-        int width = bm.getWidth();
-        bm = Bitmap.createScaledBitmap(bm, height, width, false);
     }
 
     public void setEventListener(boolean setFlag) {
@@ -186,7 +184,6 @@ public class SecondActivity extends Activity {
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
-
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = "file:" + image.getAbsolutePath();
         return image;
@@ -209,6 +206,11 @@ public class SecondActivity extends Activity {
             }
             share.putExtra(Intent.EXTRA_STREAM, Uri.parse(mCurrentPhotoPath));
             startActivity(Intent.createChooser(share, "Share Image"));
+        }
+
+        public String loadString(){
+            SharedPreferences sharedPreferences = getSharedPreferences(sharedpref, MODE_PRIVATE );
+            return sharedPreferences.getString(option, "");
         }
     }
 
