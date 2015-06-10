@@ -39,7 +39,6 @@ public class SecondActivity extends Activity {
     private Button vanilla;
     private Bitmap bm;
     private Bitmap modifiedBit;
-
     private boolean van = false;
     private boolean demo = false;
     private String mCurrentPhotoPath;

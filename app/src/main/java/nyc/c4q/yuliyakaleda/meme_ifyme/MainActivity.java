@@ -5,6 +5,9 @@ import android.net.Uri;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import java.io.IOException;
@@ -28,7 +31,7 @@ public class MainActivity extends Activity {
         take = (Button) findViewById(R.id.take);
         choose = (Button) findViewById(R.id.choose);
 
-        setEventListener(true);
+//        setEventListener(true);
 
     }
     @Override
@@ -87,4 +90,6 @@ public class MainActivity extends Activity {
             });
         }
     }
- }
+
+
+}

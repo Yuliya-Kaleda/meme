@@ -15,26 +15,26 @@
         android:layout_height="wrap_content"
         android:textSize="80sp"
         android:gravity="center"
-        android:layout_marginTop="50dp"
-        android:layout_centerHorizontal="true"
         android:textColor="#ffffff"
         android:text="Meme it!"
-        android:id="@+id/textView" />
+        android:id="@+id/textView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
 
     <Button
-        android:layout_width="350dp"
+        android:layout_width="475dp"
         android:layout_height="wrap_content"
         android:text=" Take a picture "
         android:gravity="center"
         android:id="@+id/take"
         android:textColor="#ffffff"
         android:layout_marginTop="10dp"
-        android:textSize="45sp"
+        android:textSize="50sp"
         android:background="@drawable/shape2"
         android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true" />
     <Button
-        android:layout_width="350dp"
+        android:layout_width="475dp"
         android:layout_height="wrap_content"
         android:text=" Choose Gallery "
         android:layout_marginTop="20dp"
@@ -46,7 +46,7 @@
         android:layout_below="@+id/take"
         android:layout_centerHorizontal="true"/>
     <Button
-        android:layout_width="350dp"
+        android:layout_width="475dp"
         android:layout_height="wrap_content"
         android:text=" Choose Template "
         android:gravity="center"
@@ -57,5 +57,6 @@
         android:background="@drawable/shape2"
         android:layout_below="@+id/chooseGallery"
         android:layout_centerHorizontal="true" />
+
 
 </RelativeLayout>
