@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,10 +20,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
 /**
  * Created by July on 5/31/15.
  */
+
 public class SecondActivity extends Activity {
 
     private static final String LINE_TOP = "top";
@@ -72,35 +73,6 @@ public class SecondActivity extends Activity {
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        BitmapDrawable drawable = (BitmapDrawable) image.getDrawable();
-        Bitmap bitmap = drawable.getBitmap();
-        outState.putParcelable(PICTURE, bitmap);
-        outState.putBoolean(DEMO, demo);
-        outState.putBoolean(VAN, van);
-        if (edTop!=null) {
-            outState.putString(LINE_TOP, edTop.getText().toString());
-            outState.putString(LINE_BOTTOM, edBottom.getText().toString());
-        }
-    }
-
-    public void saveData(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            Bitmap bmInst = savedInstanceState.getParcelable(PICTURE);
-            image.setImageBitmap(bmInst);
-            String top = savedInstanceState.getString(LINE_TOP);
-            String bottom = savedInstanceState.getString(LINE_BOTTOM);
-            if (edTop!=null) {
-                edTop.setText(top);
-                edBottom.setText(bottom);
-            }
-        }
-    }
-
-
     public void initializeViews() {
         image = (ImageView) findViewById(R.id.image1);
         demotivation = (Button) findViewById(R.id.demotivation);
@@ -110,26 +82,47 @@ public class SecondActivity extends Activity {
         edTop = (EditText) findViewById(R.id.line_top);
     }
 
+    //Retrieve the image from the camera or gallery intent (Main Activity class)
     public void getIntentInfo() {
         Intent intent = getIntent();
         bm = intent.getParcelableExtra("bitmap");
-        image.setImageBitmap(bm);
-
         int height = bm.getHeight();
         int width = bm.getWidth();
         bm = Bitmap.createScaledBitmap(bm, height, width, false);
+        image.setImageBitmap(bm);
+    }
+
+    //restore the previous instance state
+    public void saveData(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            Bitmap bmInst = savedInstanceState.getParcelable(PICTURE);
+            image.setImageBitmap(bmInst);
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+            Refactored following code to one-line code
+            String top = savedInstanceState.getString(LINE_TOP);
+            String bottom = savedInstanceState.getString(LINE_BOTTOM);
+            if (edTop != null) {
+                edTop.setText(top);
+                edBottom.setText(bottom);
+            }
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+            if (edTop != null || edBottom != null) {
+                edTop.setText(savedInstanceState.getString(LINE_TOP));
+                edBottom.setText(savedInstanceState.getString(LINE_BOTTOM));
+            }
+        }
     }
 
     public void setEventListener(boolean setFlag) {
-        share = (Button) findViewById(R.id.share_button);
-        if(!setFlag) {
+        if (!setFlag) {
             share.setOnClickListener(null);
             demotivation.setOnClickListener(null);
             vanilla.setOnClickListener(null);
-        }
-        else {
+        } else {
 
-            if(demotivation!=null) {
+            if (demotivation != null) {
                 demotivation.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -143,7 +136,8 @@ public class SecondActivity extends Activity {
                     }
                 });
             }
-            if (vanilla!=null) {
+
+            if (vanilla != null) {
                 vanilla.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -158,6 +152,7 @@ public class SecondActivity extends Activity {
                     }
                 });
             }
+
             share.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -170,12 +165,27 @@ public class SecondActivity extends Activity {
 
                     shareVia(modifiedBit);
 
-
                 }
             });
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        BitmapDrawable drawable = (BitmapDrawable) image.getDrawable();
+        Bitmap bitmap = drawable.getBitmap();
+        outState.putParcelable(PICTURE, bitmap);
+        outState.putBoolean(DEMO, demo);
+        outState.putBoolean(VAN, van);
+        if (edTop != null || edBottom != null) {
+            outState.putString(LINE_TOP, edTop.getText().toString());
+            outState.putString(LINE_BOTTOM, edBottom.getText().toString());
+        }
+    }
+
+    //Default file extension is .jpeg
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -184,7 +194,7 @@ public class SecondActivity extends Activity {
                 Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
+                ".jpeg",         /* suffix */
                 storageDir      /* directory */
         );
 
@@ -194,22 +204,24 @@ public class SecondActivity extends Activity {
     }
 
     //method to share an image via social networks
-        public void shareVia(Bitmap mBitmap) {
-            File f;
-            Intent share = new Intent(Intent.ACTION_SEND);
-            share.setType("image/jpeg");
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            try {
-                f = createImageFile();
-                FileOutputStream fo = new FileOutputStream(f);
-                fo.write(bytes.toByteArray());
-                fo.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            share.putExtra(Intent.EXTRA_STREAM, Uri.parse(mCurrentPhotoPath));
-            startActivity(Intent.createChooser(share, "Share Image"));
+    //and other applications that allow sharing of data (i.e. email)
+    //creating a new .jpeg image file
+    public void shareVia(Bitmap mBitmap) {
+        File f;
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.setType("image/jpeg");
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        try {
+            f = createImageFile();
+            FileOutputStream fo = new FileOutputStream(f);
+            fo.write(bytes.toByteArray());
+            fo.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        share.putExtra(Intent.EXTRA_STREAM, Uri.parse(mCurrentPhotoPath));
+        startActivity(Intent.createChooser(share, "Share Image"));
     }
+}
 
