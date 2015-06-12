@@ -1,6 +1,7 @@
 package nyc.c4q.yuliyakaleda.meme_ifyme;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -36,6 +37,7 @@ public class SecondActivity extends Activity {
     private ImageView image;
     private EditText edTop;
     private EditText edBottom;
+    private Button save;
     private Button share;
     private Button demotivation;
     private Button vanilla;
@@ -78,6 +80,7 @@ public class SecondActivity extends Activity {
         image = (ImageView) findViewById(R.id.image1);
         demotivation = (Button) findViewById(R.id.demotivation);
         vanilla = (Button) findViewById(R.id.vanilla);
+        save = (Button) findViewById(R.id.save_button);
         share = (Button) findViewById(R.id.share_button);
         edBottom = (EditText) findViewById(R.id.line_bottom);
         edTop = (EditText) findViewById(R.id.line_top);
@@ -154,11 +157,26 @@ public class SecondActivity extends Activity {
                 });
             }
 
+            save.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    RelativeLayout rl = (RelativeLayout) findViewById(R.id.rl);
+                    share.setVisibility(View.GONE);
+                    save.setVisibility(View.GONE);
+                    rl.setDrawingCacheEnabled(true);
+                    rl.buildDrawingCache();
+                    modifiedBit = rl.getDrawingCache();
+
+                    saveImage(modifiedBit);
+                }
+            });
+
             share.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
                     RelativeLayout rl = (RelativeLayout) findViewById(R.id.rl);
+                    save.setVisibility(View.GONE);
                     share.setVisibility(View.GONE);
                     rl.setDrawingCacheEnabled(true);
                     rl.buildDrawingCache();
@@ -225,6 +243,7 @@ public class SecondActivity extends Activity {
         startActivity(Intent.createChooser(share, "Share Image"));
     }
 
+    //
     public void saveImage(Bitmap mBitmap) {
 
         File fileDirectory;
@@ -233,16 +252,16 @@ public class SecondActivity extends Activity {
         File file;
         FileOutputStream fileOutputStream;
 
+        //Name the image with the date created
+        timeStamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        imageFileName = "Meme " + timeStamp + ".jpeg"; //Must add the .jpeg file extension for the system to know it's a picture file
+
         //check if external storage is available
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             try {
                 //Make new directory inside the Pictures directory
                 fileDirectory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + "/SavedMemes");
                 fileDirectory.mkdirs();
-
-                //Name the image with the date created
-                timeStamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
-                imageFileName = "Meme " + timeStamp + ".jpeg"; //Must add the .jpeg file extension for the system to know it's a picture file
 
                 //Make the image file to be saved in the newly created SavedMemes directory
                 file = new File(fileDirectory, imageFileName);
@@ -255,8 +274,19 @@ public class SecondActivity extends Activity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
-            //todo save image in internal storage
+        }
+        //if external storage is not available, save to internal storage
+        else {
+            try {
+                fileOutputStream = openFileOutput(imageFileName, Context.MODE_PRIVATE);
+                mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -20,8 +21,8 @@ public class MainActivity extends Activity {
     private static final int SELECT_PICTURE = 1;
     private static final int REQUEST_IMAGE_CAPTURE = 2;
 
-    private Button take;
-    private Button choose;
+    private ImageButton take;
+    private ImageButton choose;
 
     private Bitmap imageBitmap;
     private Uri imageUri;
@@ -36,8 +37,8 @@ public class MainActivity extends Activity {
     }
 
     public void initializeViews() {
-        take = (Button) findViewById(R.id.take);
-        choose = (Button) findViewById(R.id.choose);
+        take = (ImageButton) findViewById(R.id.take);
+        choose = (ImageButton) findViewById(R.id.choose);
     }
 
     public void setEventListener(boolean setFlag) {
