@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -222,6 +223,41 @@ public class SecondActivity extends Activity {
         }
         share.putExtra(Intent.EXTRA_STREAM, Uri.parse(mCurrentPhotoPath));
         startActivity(Intent.createChooser(share, "Share Image"));
+    }
+
+    public void saveImage(Bitmap mBitmap) {
+
+        File fileDirectory;
+        String timeStamp;
+        String imageFileName;
+        File file;
+        FileOutputStream fileOutputStream;
+
+        //check if external storage is available
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            try {
+                //Make new directory inside the Pictures directory
+                fileDirectory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + "/SavedMemes");
+                fileDirectory.mkdirs();
+
+                //Name the image with the date created
+                timeStamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
+                imageFileName = "Meme " + timeStamp + ".jpeg"; //Must add the .jpeg file extension for the system to know it's a picture file
+
+                //Make the image file to be saved in the newly created SavedMemes directory
+                file = new File(fileDirectory, imageFileName);
+                fileOutputStream = new FileOutputStream(file);
+                mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            //todo save image in internal storage
+        }
     }
 }
 
