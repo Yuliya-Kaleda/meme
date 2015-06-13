@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -37,6 +38,7 @@ public class SecondActivity extends Activity {
     private static final String VAN = "van";
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
     private static final int RESULT_LOAD_IMG = 1;
+    private static final String photoSave = "photo";
 
     private ImageView image;
     private EditText edTop;
@@ -45,6 +47,7 @@ public class SecondActivity extends Activity {
     private Button demotivation;
     private Button vanilla;
     private Bitmap bm;
+
 //    private boolean van = false;
 //    private boolean demo = false;
     @Override
@@ -54,60 +57,37 @@ public class SecondActivity extends Activity {
         initializeViews();
         Intent intent = getIntent();
         String option = intent.getExtras().getString("string");
-        if (option.equals("take")) {
-            Intent openCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(openCamera, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+        if(savedInstanceState!=null){
+            bm = savedInstanceState.getParcelable(photoSave);
+            image.setImageBitmap(bm);
+        }else {
+            if (option.equals("take")) {
+                Intent openCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(openCamera, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+            }
+            if (option.equals("choose")){
+                Intent openGallery = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                openGallery.setType("image/*");
+                startActivityForResult(openGallery, RESULT_LOAD_IMG);
+            }
         }
-        if (option.equals("choose")){
-            Intent openGallery = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            openGallery.setType("image/*");
-            startActivityForResult(openGallery, RESULT_LOAD_IMG);
-        }
+
+        demotivation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setContentView(R.layout.demotivational);
+                image.setImageBitmap(bm);
+            }
+        });
+        vanilla.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setContentView(R.layout.vanilla);
+                image.setImageBitmap(bm);
+            }
+        });
+
     }
-
-//    public void setLayoutView(Bundle savedInstanceState) {
-//        if (savedInstanceState != null) {
-//            demo = savedInstanceState.getBoolean(DEMO);
-//            van = savedInstanceState.getBoolean(VAN);
-//            if (demo) {
-//                setContentView(R.layout.demotivational);
-//            } else if (van) {
-//                setContentView(R.layout.vanilla);
-//            } else {
-//                setContentView(R.layout.image);
-//            }
-//        } else {
-//            setContentView(R.layout.image);
-//        }
-//    }
-//
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//
-//        BitmapDrawable drawable = (BitmapDrawable) image.getDrawable();
-//        Bitmap bitmap = drawable.getBitmap();
-//        outState.putParcelable(PICTURE, bitmap);
-//        outState.putBoolean(DEMO, demo);
-//        outState.putBoolean(VAN, van);
-//        if (edTop!=null) {
-//            outState.putString(LINE_TOP, edTop.getText().toString());
-//            outState.putString(LINE_BOTTOM, edBottom.getText().toString());
-//        }
-//    }
-
-//    public void saveData(Bundle savedInstanceState) {
-//        if (savedInstanceState != null) {
-//            Bitmap bmInst = savedInstanceState.getParcelable(PICTURE);
-//            image.setImageBitmap(bmInst);
-//            String top = savedInstanceState.getString(LINE_TOP);
-//            String bottom = savedInstanceState.getString(LINE_BOTTOM);
-//            if (edTop!=null) {
-//                edTop.setText(top);
-//                edBottom.setText(bottom);
-//            }
-//        }
-//    }
 
 
     public void initializeViews() {
@@ -119,57 +99,7 @@ public class SecondActivity extends Activity {
         edTop = (EditText) findViewById(R.id.line_top);
     }
 
-//    public void setEventListener(boolean setFlag) {
-//        share = (Button) findViewById(R.id.share_button);
-//        if(!setFlag) {
-//            share.setOnClickListener(null);
-//            demotivation.setOnClickListener(null);
-//            vanilla.setOnClickListener(null);
-//        }
-//        else {
-//
-//            if(demotivation!=null) {
-//                demotivation.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        setContentView(R.layout.demotivational);
-//                        demo = true;
-//
-//                        ImageView imBlackBack = (ImageView) findViewById(R.id.image1);
-//                        imBlackBack.setImageBitmap(bm);
-//
-//                        setEventListener(true);
-//                    }
-//                });
-//            }
-//            if (vanilla!=null) {
-//                vanilla.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        setContentView(R.layout.vanilla);
-//                        van = true;
-//
-//                        ImageView imBlackBack = (ImageView) findViewById(R.id.image1);
-//                        imBlackBack.setImageBitmap(bm);
-//
-//                        setEventListener(true);
-//
-//                    }
-//                });
-//            }
-//            share.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//
-//                    RelativeLayout rl = (RelativeLayout) findViewById(R.id.rl);
-//                    share.setVisibility(View.GONE);
-//                    rl.setDrawingCacheEnabled(true);
-//                    rl.buildDrawingCache();
-//
-//                }
-//            });
-//        }
-//    }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK) {
             try {
@@ -187,6 +117,45 @@ public class SecondActivity extends Activity {
             bm = (Bitmap) data.getExtras().get("data");
             image.setImageBitmap(bm);
         }
+    }
+
+    public Bitmap loadBitmapFromView(RelativeLayout view) {
+
+        view.setDrawingCacheEnabled(true);
+
+        view.buildDrawingCache();
+
+        bm = view.getDrawingCache();
+
+        return bm;
+    }
+
+    public void saveMeme(Bitmap bm, String imgName, ContentResolver c) {
+
+        OutputStream fOut = null;
+        String strDirectory = Environment.getExternalStorageDirectory().toString();
+
+        File f = new File(strDirectory, imgName);
+        try {
+            fOut = new FileOutputStream(f);
+
+            // Compress image
+            bm.compress(Bitmap.CompressFormat.PNG, 85, fOut);
+            fOut.flush();
+            fOut.close();
+
+            // Update image to gallery
+            MediaStore.Images.Media.insertImage(c,
+                    f.getAbsolutePath(), f.getName(), f.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(photoSave,bm );
     }
 
     }

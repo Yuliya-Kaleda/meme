@@ -9,8 +9,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            android:id="@+id/image1"
-        android:layout_weight="9"/>
+            android:id="@+id/image1" />
 
 
     <LinearLayout
@@ -18,7 +17,6 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="#3F2860"
-        android:layout_weight="1"
         android:layout_alignParentTop="false"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
