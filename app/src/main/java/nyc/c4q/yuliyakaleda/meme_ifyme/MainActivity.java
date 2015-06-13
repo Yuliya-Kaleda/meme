@@ -12,9 +12,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     private Button take;
     private Button chooseGallery;
-    private Button chooseTemplate;
-    private String option= "action";
-    private static final String sharedpref = "nyc.c4q.fattyduck.meme.sharedpref";
 
 
     @Override
@@ -23,37 +20,24 @@ public class MainActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_main);
         take = (Button) findViewById(R.id.take);
         chooseGallery = (Button) findViewById(R.id.chooseGallery);
-        chooseTemplate = (Button) findViewById(R.id.chooseTemp);
         take.setOnClickListener(this);
         chooseGallery.setOnClickListener(this);
-        chooseTemplate.setOnClickListener(this);
 
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.take:
-                saveString("take");
-                startSecond();
-                break;
-            case R.id.chooseGallery:
-                saveString("choose");
-                break;
-            case R.id.chooseTemp:
-                Intent i = new Intent(this, Template.class);
-                startActivity(i);
-                break;
+
+        if(view.getId()==R.id.take){
+            startSecond("take");
+        }else{
+            startSecond("choose");
         }
     }
 
-    public void saveString(String saveStr){
-        SharedPreferences sharedPreferences = getSharedPreferences(sharedpref, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(option, saveStr);
-    }
-    public void startSecond(){
+    public void startSecond(String extra){
         Intent i = new Intent(this,SecondActivity.class);
+        i.putExtra("string", extra);
         startActivity(i);
     }
 
