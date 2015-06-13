@@ -1,22 +1,30 @@
 package nyc.c4q.yuliyakaleda.meme_ifyme;
+
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.Toast;
+
 import java.io.IOException;
 
 
 public class MainActivity extends Activity {
 
+    //hard coding constants are prone to errors so
+    //made the request code constants here
     private static final int SELECT_PICTURE = 1;
     private static final int REQUEST_IMAGE_CAPTURE = 2;
 
-    private Button take;
-    private Button choose;
+    private ImageButton take;
+    private ImageButton choose;
+
+    private Bitmap imageBitmap;
     private Uri imageUri;
 
 
@@ -24,48 +32,21 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        take = (Button) findViewById(R.id.take);
-        choose = (Button) findViewById(R.id.choose);
-
+        initializeViews();
         setEventListener(true);
-
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Bitmap imageBitmap = null;
-        switch (requestCode) {
-            case SELECT_PICTURE:
-                if (resultCode == RESULT_OK) {
-                    imageUri = data.getData();
-                    try {
-                        imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                        // http://stackoverflow.com/a/10281667, image is too big so you gotta resize
-                        imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 200, 200, true);
-                    } catch (IOException e) {
-                    }
-                }
-                break;
-
-            case REQUEST_IMAGE_CAPTURE:
-                if (resultCode == RESULT_OK) {
-                    Bundle extras = data.getExtras();
-                    imageBitmap = (Bitmap) extras.get("data");
-                }
-                break;
-        }
-        Intent sentTo = new Intent(MainActivity.this, SecondActivity.class);
-        sentTo.putExtra("bitmap", imageBitmap);
-        startActivity(sentTo);
+    public void initializeViews() {
+        take = (ImageButton) findViewById(R.id.take);
+        choose = (ImageButton) findViewById(R.id.choose);
     }
 
     public void setEventListener(boolean setFlag) {
         if (!setFlag) {
             take.setOnClickListener(null);
             choose.setOnClickListener(null);
-        }
-        else {
+        } else {
+            //camera intent
             take.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -75,6 +56,7 @@ public class MainActivity extends Activity {
                     }
                 }
             });
+            //gallery intent
             choose.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -87,4 +69,44 @@ public class MainActivity extends Activity {
             });
         }
     }
- }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        imageBitmap = null;
+        //the request codes differentiate which intent is returning the image
+        switch (requestCode) {
+            case SELECT_PICTURE:
+                if (resultCode == RESULT_OK) {
+                    imageUri = data.getData();
+                    try {
+                        imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                        // http://stackoverflow.com/a/10281667, image is too big so you gotta resize
+                        imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 200, 200, true);
+                    } catch (IOException e) {
+
+                    }
+                }
+                break;
+
+            case REQUEST_IMAGE_CAPTURE:
+                if (resultCode == RESULT_OK) {
+                    Bundle extras = data.getExtras();
+                    imageBitmap = (Bitmap) extras.get("data");
+                }
+                break;
+        }
+
+        //null pointer exception occurred
+        //pressing the back button to go back to main activity screen
+        //made the app crash when no picture was taken/selected in camera/gallery
+        //added below condition so second activity starts only when there is an image stored
+        if (imageBitmap != null) {
+            Intent sentTo = new Intent(MainActivity.this, SecondActivity.class);
+            sentTo.putExtra("bitmap", imageBitmap);
+            startActivity(sentTo);
+        } else {
+            Toast.makeText(this, "No picture found", Toast.LENGTH_LONG).show();
+        }
+    }
+}
