@@ -11,23 +11,20 @@ import java.io.IOException;
 
 
 public class MainActivity extends Activity {
-
     private static final int SELECT_PICTURE = 1;
     private static final int REQUEST_IMAGE_CAPTURE = 2;
-
     private Button gotoCamera;
     private Button gotoGallery;
     private Uri imageUri;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        // Initialize widgets
         gotoCamera = (Button) findViewById(R.id.goto_camera_btn);
         gotoGallery = (Button) findViewById(R.id.goto_gallery_btn);
-
+        // Set Listeners
         gotoGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -38,7 +35,6 @@ public class MainActivity extends Activity {
                 startActivityForResult(chooser, SELECT_PICTURE);
             }
         });
-
         gotoCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -48,12 +44,10 @@ public class MainActivity extends Activity {
                 }
             }
         });
-
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         Bitmap imageBitmap = null;
         switch (requestCode) {
             case SELECT_PICTURE:
@@ -66,11 +60,11 @@ public class MainActivity extends Activity {
                         Intent sentTo = new Intent(MainActivity.this, SecondActivity.class);
                         sentTo.putExtra("bitmap", imageBitmap);
                         startActivity(sentTo);
-                    } catch (IOException e) {
+                    }
+                    catch (IOException e) {
                     }
                 }
                 break;
-
             case REQUEST_IMAGE_CAPTURE:
                 if (resultCode == RESULT_OK) {
                     Bundle extras = data.getExtras();
@@ -81,8 +75,6 @@ public class MainActivity extends Activity {
                 }
                 break;
         }
-
     }
-
 
  }

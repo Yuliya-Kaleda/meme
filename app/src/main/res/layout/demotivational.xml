@@ -44,6 +44,15 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/save_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/shape2"
+            android:text="@string/save_button"
+            android:textColor="#ffffff" />
+
+        <Button
             android:id="@+id/share_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -58,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/shape2"
-            android:text="@string/demotivation"
+            android:text="@string/demotivational"
             android:textColor="#ffffff" />
 
         <Button
