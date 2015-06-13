@@ -1,21 +1,27 @@
 package nyc.c4q.yuliyakaleda.meme_ifyme;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -30,6 +36,9 @@ public class SecondActivity extends Activity {
     private static final String PICTURE = "pict";
     private static final String DEMO = "demo";
     private static final String VAN = "van";
+    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+    private static final int RESULT_LOAD_IMG = 1;
+    private static final String photoSave = "photo";
 
     private ImageView image;
     private EditText edTop;
@@ -37,67 +46,74 @@ public class SecondActivity extends Activity {
     private Button share;
     private Button demotivation;
     private Button vanilla;
+    private Button save;
     private Bitmap bm;
-    private Bitmap modifiedBit;
 
-    private boolean van = false;
-    private boolean demo = false;
-    private String mCurrentPhotoPath;
-
+//    private boolean van = false;
+//    private boolean demo = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setLayoutView(savedInstanceState);
+        setContentView(R.layout.image);
         initializeViews();
-        getIntentInfo();
-        saveData(savedInstanceState);
-        setEventListener(true);
-    }
+        Intent intent = getIntent();
+        String option = intent.getExtras().getString("string");
+        if(savedInstanceState!=null){
+            bm = savedInstanceState.getParcelable(photoSave);
+            image.setImageBitmap(bm);
+        }else {
+            if (option.equals("take")) {
+                Intent openCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(openCamera, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+            }
+            if (option.equals("choose")){
+                Intent openGallery = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                openGallery.setType("image/*");
+                startActivityForResult(openGallery, RESULT_LOAD_IMG);
+            }
+        }
 
-
-    public void setLayoutView(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            demo = savedInstanceState.getBoolean(DEMO);
-            van = savedInstanceState.getBoolean(VAN);
-            if (demo) {
+        demotivation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 setContentView(R.layout.demotivational);
-            } else if (van) {
+                image.setImageBitmap(bm);
+            }
+        });
+        vanilla.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 setContentView(R.layout.vanilla);
-            } else {
-                setContentView(R.layout.image);
+                image.setImageBitmap(bm);
             }
-        } else {
-            setContentView(R.layout.image);
-        }
-    }
+        });
+        share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RelativeLayout meme = (RelativeLayout) findViewById(R.id.rl);
+                Bitmap bitmap = loadBitmapFromView(meme);
+                saveMeme(bitmap, "meme", getContentResolver());
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+                String pathBm = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "meme", null);
+                Uri bmUri = Uri.parse(pathBm);
 
-        BitmapDrawable drawable = (BitmapDrawable) image.getDrawable();
-        Bitmap bitmap = drawable.getBitmap();
-        outState.putParcelable(PICTURE, bitmap);
-        outState.putBoolean(DEMO, demo);
-        outState.putBoolean(VAN, van);
-        if (edTop!=null) {
-            outState.putString(LINE_TOP, edTop.getText().toString());
-            outState.putString(LINE_BOTTOM, edBottom.getText().toString());
-        }
-    }
-
-    public void saveData(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            Bitmap bmInst = savedInstanceState.getParcelable(PICTURE);
-            image.setImageBitmap(bmInst);
-            String top = savedInstanceState.getString(LINE_TOP);
-            String bottom = savedInstanceState.getString(LINE_BOTTOM);
-            if (edTop!=null) {
-                edTop.setText(top);
-                edBottom.setText(bottom);
+                Intent attachIntent = new Intent(Intent.ACTION_SEND);
+                attachIntent.putExtra(Intent.EXTRA_STREAM, bmUri);
+                attachIntent.setType("image/png");
+                startActivity(attachIntent);
             }
-        }
+        });
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RelativeLayout meme = (RelativeLayout) findViewById(R.id.rl);
+                Bitmap bitmap = loadBitmapFromView(meme);
+                saveMeme(bitmap, "meme", getContentResolver());
+                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + Environment.getExternalStorageDirectory()))); // Dison is fixing this.
+                Toast.makeText(getApplicationContext(), "Meme saved!", Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
 
 
@@ -108,108 +124,67 @@ public class SecondActivity extends Activity {
         share = (Button) findViewById(R.id.share_button);
         edBottom = (EditText) findViewById(R.id.line_bottom);
         edTop = (EditText) findViewById(R.id.line_top);
+        save = (Button) findViewById(R.id.save_button);
     }
 
-    public void getIntentInfo() {
-        Intent intent = getIntent();
-        bm = intent.getParcelableExtra("bitmap");
-        image.setImageBitmap(bm);
 
-        int height = bm.getHeight();
-        int width = bm.getWidth();
-        bm = Bitmap.createScaledBitmap(bm, height, width, false);
-    }
-
-    public void setEventListener(boolean setFlag) {
-        share = (Button) findViewById(R.id.share_button);
-        if(!setFlag) {
-            share.setOnClickListener(null);
-            demotivation.setOnClickListener(null);
-            vanilla.setOnClickListener(null);
-        }
-        else {
-
-            if(demotivation!=null) {
-                demotivation.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        setContentView(R.layout.demotivational);
-                        demo = true;
-
-                        ImageView imBlackBack = (ImageView) findViewById(R.id.image1);
-                        imBlackBack.setImageBitmap(bm);
-
-                        setEventListener(true);
-                    }
-                });
-            }
-            if (vanilla!=null) {
-                vanilla.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        setContentView(R.layout.vanilla);
-                        van = true;
-
-                        ImageView imBlackBack = (ImageView) findViewById(R.id.image1);
-                        imBlackBack.setImageBitmap(bm);
-
-                        setEventListener(true);
-
-                    }
-                });
-            }
-            share.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    RelativeLayout rl = (RelativeLayout) findViewById(R.id.rl);
-                    share.setVisibility(View.GONE);
-                    rl.setDrawingCacheEnabled(true);
-                    rl.buildDrawingCache();
-                    modifiedBit = rl.getDrawingCache();
-
-                    shareVia(modifiedBit);
-
-
-                }
-            });
-        }
-    }
-
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
-        return image;
-    }
-
-    //method to share an image via social networks
-        public void shareVia(Bitmap mBitmap) {
-            File f;
-            Intent share = new Intent(Intent.ACTION_SEND);
-            share.setType("image/jpeg");
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK) {
             try {
-                f = createImageFile();
-                FileOutputStream fo = new FileOutputStream(f);
-                fo.write(bytes.toByteArray());
-                fo.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                final Uri selectedImage = data.getData();
+                getContentResolver().notifyChange(selectedImage, null);
+                ContentResolver cr = getContentResolver();
+                image.setImageBitmap(bm);
+
+
+            } catch (Exception e) {
+                Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
             }
-            share.putExtra(Intent.EXTRA_STREAM, Uri.parse(mCurrentPhotoPath));
-            startActivity(Intent.createChooser(share, "Share Image"));
         }
+        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+            bm = (Bitmap) data.getExtras().get("data");
+            image.setImageBitmap(bm);
+        }
+    }
+
+    public Bitmap loadBitmapFromView(RelativeLayout view) {
+
+        view.setDrawingCacheEnabled(true);
+
+        view.buildDrawingCache();
+
+        bm = view.getDrawingCache();
+
+        return bm;
+    }
+
+    public void saveMeme(Bitmap bm, String imgName, ContentResolver c) {
+
+        OutputStream fOut = null;
+        String strDirectory = Environment.getExternalStorageDirectory().toString();
+
+        File f = new File(strDirectory, imgName);
+        try {
+            fOut = new FileOutputStream(f);
+
+            // Compress image
+            bm.compress(Bitmap.CompressFormat.PNG, 85, fOut);
+            fOut.flush();
+            fOut.close();
+
+            // Update image to gallery
+            MediaStore.Images.Media.insertImage(c,
+                    f.getAbsolutePath(), f.getName(), f.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(photoSave,bm );
+    }
+
     }
 
