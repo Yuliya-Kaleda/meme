@@ -46,6 +46,7 @@ public class SecondActivity extends Activity {
     private Button share;
     private Button demotivation;
     private Button vanilla;
+    private Button save;
     private Bitmap bm;
 
 //    private boolean van = false;
@@ -86,6 +87,32 @@ public class SecondActivity extends Activity {
                 image.setImageBitmap(bm);
             }
         });
+        share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RelativeLayout meme = (RelativeLayout) findViewById(R.id.rl);
+                Bitmap bitmap = loadBitmapFromView(meme);
+                saveMeme(bitmap, "meme", getContentResolver());
+
+                String pathBm = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "meme", null);
+                Uri bmUri = Uri.parse(pathBm);
+
+                Intent attachIntent = new Intent(Intent.ACTION_SEND);
+                attachIntent.putExtra(Intent.EXTRA_STREAM, bmUri);
+                attachIntent.setType("image/png");
+                startActivity(attachIntent);
+            }
+        });
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RelativeLayout meme = (RelativeLayout) findViewById(R.id.rl);
+                Bitmap bitmap = loadBitmapFromView(meme);
+                saveMeme(bitmap, "meme", getContentResolver());
+                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + Environment.getExternalStorageDirectory()))); // Dison is fixing this.
+                Toast.makeText(getApplicationContext(), "Meme saved!", Toast.LENGTH_LONG).show();
+            }
+        });
 
     }
 
@@ -97,6 +124,7 @@ public class SecondActivity extends Activity {
         share = (Button) findViewById(R.id.share_button);
         edBottom = (EditText) findViewById(R.id.line_bottom);
         edTop = (EditText) findViewById(R.id.line_top);
+        save = (Button) findViewById(R.id.save_button);
     }
 
 
