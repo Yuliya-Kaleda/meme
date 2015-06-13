@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,191 +26,236 @@ import java.util.Date;
  */
 public class SecondActivity extends Activity {
 
+    // KEYS
     private static final String LINE_TOP = "top";
     private static final String LINE_BOTTOM = "bottom";
     private static final String PICTURE = "pict";
     private static final String DEMO = "demo";
     private static final String VAN = "van";
+    private boolean isVanilla = false;
+    private boolean isDemotivational = false;
 
-    private ImageView image;
-    private EditText edTop;
-    private EditText edBottom;
-    private Button share;
-    private Button demotivation;
-    private Button vanilla;
-    private Bitmap bm;
-    private Bitmap modifiedBit;
+    // IMAGE HOLDERS
+    private ImageView imageHolder;
+    private RelativeLayout layoutHolder;
+    // TEXT HOLDERS
+    private EditText etTop;
+    private EditText etBottom;
 
-    private boolean van = false;
-    private boolean demo = false;
+    // BUTTONS
+    private Button shareBtn;
+    private Button demotivationalBtn;
+    private Button vanillaBtn;
+
+    // BITMAP SOURCES
+    private Bitmap intentBitmap;
+    private Bitmap savedBitmap;
+
     private String mCurrentPhotoPath;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setLayoutView(savedInstanceState);
-        initializeViews();
-        getIntentInfo();
-        saveData(savedInstanceState);
-        setEventListener(true);
-    }
-
-
-    public void setLayoutView(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            demo = savedInstanceState.getBoolean(DEMO);
-            van = savedInstanceState.getBoolean(VAN);
-            if (demo) {
-                setContentView(R.layout.demotivational);
-            } else if (van) {
-                setContentView(R.layout.vanilla);
-            } else {
-                setContentView(R.layout.image);
-            }
-        } else {
-            setContentView(R.layout.image);
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        BitmapDrawable drawable = (BitmapDrawable) image.getDrawable();
-        Bitmap bitmap = drawable.getBitmap();
-        outState.putParcelable(PICTURE, bitmap);
-        outState.putBoolean(DEMO, demo);
-        outState.putBoolean(VAN, van);
-        if (edTop!=null) {
-            outState.putString(LINE_TOP, edTop.getText().toString());
-            outState.putString(LINE_BOTTOM, edBottom.getText().toString());
-        }
-    }
-
-    public void saveData(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            Bitmap bmInst = savedInstanceState.getParcelable(PICTURE);
-            image.setImageBitmap(bmInst);
-            String top = savedInstanceState.getString(LINE_TOP);
-            String bottom = savedInstanceState.getString(LINE_BOTTOM);
-            if (edTop!=null) {
-                edTop.setText(top);
-                edBottom.setText(bottom);
-            }
-        }
-    }
 
 
     public void initializeViews() {
-        image = (ImageView) findViewById(R.id.image1);
-        demotivation = (Button) findViewById(R.id.demotivation);
-        vanilla = (Button) findViewById(R.id.vanilla);
-        share = (Button) findViewById(R.id.share_button);
-        edBottom = (EditText) findViewById(R.id.line_bottom);
-        edTop = (EditText) findViewById(R.id.line_top);
+
+        layoutHolder = (RelativeLayout) findViewById(R.id.relative_layout_holder);
+        imageHolder = (ImageView) findViewById(R.id.image_holder);
+
+        demotivationalBtn = (Button) findViewById(R.id.goto_demotivational_layout);
+        vanillaBtn = (Button) findViewById(R.id.goto_vanilla_layout);
+        shareBtn = (Button) findViewById(R.id.share_button);
+
+        etBottom = (EditText) findViewById(R.id.bottom_edit);
+        etTop = (EditText) findViewById(R.id.top_edit);
     }
 
-    public void getIntentInfo() {
-        Intent intent = getIntent();
-        bm = intent.getParcelableExtra("bitmap");
-        image.setImageBitmap(bm);
 
-        int height = bm.getHeight();
-        int width = bm.getWidth();
-        bm = Bitmap.createScaledBitmap(bm, height, width, false);
+    // HERE WE SAVE DATA: PICTURE AND LAYOUT
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(PICTURE, intentBitmap);
+
+        outState.putBoolean(DEMO, isDemotivational);
+
+        outState.putBoolean(VAN, isVanilla);
+
+        if (etTop != null) {
+
+            outState.putString(LINE_TOP, etTop.getText().toString());
+
+            outState.putString(LINE_BOTTOM, etBottom.getText().toString());
+
+        }
+
     }
 
-    public void setEventListener(boolean setFlag) {
-        share = (Button) findViewById(R.id.share_button);
-        if(!setFlag) {
-            share.setOnClickListener(null);
-            demotivation.setOnClickListener(null);
-            vanilla.setOnClickListener(null);
+
+    public void loadData(Bundle savedInstanceState) {
+
+        if (savedInstanceState != null) {
+            isDemotivational = savedInstanceState.getBoolean(DEMO);
+            isVanilla = savedInstanceState.getBoolean(VAN);
+            intentBitmap = savedInstanceState.getParcelable(PICTURE);
+
+            if (isDemotivational) {
+                setContentView(R.layout.demotivational);
+                initializeViews();
+                getIntentInfo();
+                setEventListener();
+            }
+            else if (isVanilla) {
+                setContentView(R.layout.vanilla);
+                initializeViews();
+                getIntentInfo();
+                setEventListener();
+            }
+            else {
+                setContentView(R.layout.neutral);
+                initializeViews();
+                getIntentInfo();
+                setEventListener();
+            }
+
+            imageHolder.setImageBitmap(intentBitmap);
+
+            String top = savedInstanceState.getString(LINE_TOP);
+
+            String bottom = savedInstanceState.getString(LINE_BOTTOM);
+
+            etTop.setText(top);
+
+            etBottom.setText(bottom);
         }
         else {
+            setContentView(R.layout.neutral);
+            initializeViews();
+            getIntentInfo();
+            setEventListener();
 
-            if(demotivation!=null) {
-                demotivation.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        setContentView(R.layout.demotivational);
-                        demo = true;
+        }
+    }
 
-                        ImageView imBlackBack = (ImageView) findViewById(R.id.image1);
-                        imBlackBack.setImageBitmap(bm);
 
-                        setEventListener(true);
-                    }
-                });
-            }
-            if (vanilla!=null) {
-                vanilla.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        setContentView(R.layout.vanilla);
-                        van = true;
+    public void getIntentInfo() {
 
-                        ImageView imBlackBack = (ImageView) findViewById(R.id.image1);
-                        imBlackBack.setImageBitmap(bm);
+        intentBitmap = getIntent().getParcelableExtra("bitmap");
 
-                        setEventListener(true);
+        imageHolder.setImageBitmap(intentBitmap);
 
-                    }
-                });
-            }
-            share.setOnClickListener(new View.OnClickListener() {
+        int height = intentBitmap.getHeight();
+
+        int width = intentBitmap.getWidth();
+
+        intentBitmap = Bitmap.createScaledBitmap(intentBitmap, height, width, false);
+
+    }
+
+    public void setEventListener() {
+
+        if (demotivationalBtn != null) {
+            demotivationalBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    RelativeLayout rl = (RelativeLayout) findViewById(R.id.rl);
-                    share.setVisibility(View.GONE);
-                    rl.setDrawingCacheEnabled(true);
-                    rl.buildDrawingCache();
-                    modifiedBit = rl.getDrawingCache();
-
-                    shareVia(modifiedBit);
-
-
+                    setContentView(R.layout.demotivational);
+                    initializeViews();
+                    setEventListener();
+                    isDemotivational = true;
+                    isVanilla = false;
+                    imageHolder.setImageBitmap(intentBitmap);
                 }
             });
         }
+
+        if (vanillaBtn != null) {
+            vanillaBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    setContentView(R.layout.vanilla);
+                    initializeViews();
+                    setEventListener();
+                    isVanilla = true;
+                    isDemotivational = false;
+                    imageHolder.setImageBitmap(intentBitmap);
+                }
+            });
+        }
+
+        shareBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                shareBtn.setVisibility(View.INVISIBLE);
+                demotivationalBtn.setVisibility(View.INVISIBLE);
+                vanillaBtn.setVisibility(View.INVISIBLE);
+                layoutHolder.setDrawingCacheEnabled(true);
+                layoutHolder.buildDrawingCache();
+                savedBitmap = layoutHolder.getDrawingCache();
+                shareThis(savedBitmap);
+                shareBtn.setVisibility(View.VISIBLE);
+                demotivationalBtn.setVisibility(View.VISIBLE);
+                vanillaBtn.setVisibility(View.VISIBLE);
+
+            }
+        });
+
     }
 
-    private File createImageFile() throws IOException {
+    private File createBlankImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
         String imageFileName = "JPEG_" + timeStamp + "_";
+
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
+
+        File imageFile = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
-        return image;
+        mCurrentPhotoPath = "file:" + imageFile.getAbsolutePath();
+
+        return imageFile;
     }
 
     //method to share an image via social networks
-        public void shareVia(Bitmap mBitmap) {
-            File f;
-            Intent share = new Intent(Intent.ACTION_SEND);
-            share.setType("image/jpeg");
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            try {
-                f = createImageFile();
-                FileOutputStream fo = new FileOutputStream(f);
-                fo.write(bytes.toByteArray());
-                fo.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            share.putExtra(Intent.EXTRA_STREAM, Uri.parse(mCurrentPhotoPath));
-            startActivity(Intent.createChooser(share, "Share Image"));
+    public void shareThis(Bitmap receivedBitmap) {
+
+
+        ByteArrayOutputStream compressedOutputStream = new ByteArrayOutputStream();
+
+        receivedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, compressedOutputStream);
+
+        try {
+
+            FileOutputStream outputStream = new FileOutputStream(createBlankImageFile());
+
+            outputStream.write(compressedOutputStream.toByteArray());
+
+            outputStream.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        Intent share = new Intent(Intent.ACTION_SEND);
+
+        share.setType("image/jpeg");
+
+        share.putExtra(Intent.EXTRA_STREAM, Uri.parse(mCurrentPhotoPath));
+
+        startActivity(Intent.createChooser(share, "Share Image"));
     }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // IF NULL IT GOES TO NEUTRAL
+        loadData(savedInstanceState);
+    }
+
+}
 
