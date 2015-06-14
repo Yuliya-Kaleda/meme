@@ -1,12 +1,20 @@
 package nyc.c4q.yuliyakaleda.meme_ifyme;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,8 +22,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.android.AndroidAuthSession;
+import com.dropbox.client2.exception.DropboxException;
+import com.dropbox.client2.session.AppKeyPair;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -33,7 +48,12 @@ public class SecondActivity extends Activity {
     private static final String PICTURE = "pict";
     private static final String DEMO = "demo";
     private static final String VAN = "van";
+
+
     private boolean isVanilla = false;
+
+
+
     private boolean isDemotivational = false;
     // IMAGE HOLDERS
     private ImageView imageHolder;
@@ -49,14 +69,68 @@ public class SecondActivity extends Activity {
     // BITMAP SOURCES
     private Bitmap intentBitmap;
     private Bitmap savedBitmap;
-
     private String mCurrentPhotoPath;
 
+    final static private String APP_KEY = "vaqyd4n8eyetosx";
+
+
+    final static private String APP_SECRET = "4qgw2e2vt3lfvgn";
+    private DropboxAPI<AndroidAuthSession> mDBApi;
+
+    public static final int DROPBOX_FINISHED = 1324;
+
+    File dropFile=null;
+
+    Handler backgroundHandler;
+    Handler mainHandler;
+
+    public static final int NOTIFICATION_ID = 1234;
+    NotificationManager mNotificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loadData(savedInstanceState);
+
+        AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
+        AndroidAuthSession session = new AndroidAuthSession(appKeys);
+        mDBApi = new DropboxAPI<AndroidAuthSession>(session);
+        mDBApi.getSession().startOAuth2Authentication(SecondActivity.this);
+
+        mainHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                if(msg.what==DROPBOX_FINISHED){
+                    mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    mNotificationManager.notify(NOTIFICATION_ID, makeNotification("Dropbox", "Upload Complete"));
+                }
+            }
+        };
+
+    }
+
+    public Notification makeNotification(String title,String text){
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+        // THINGS TO PASS INTO METHOD
+        builder.setContentTitle(title);
+        builder.setContentText(text);
+        builder.setSmallIcon(R.drawable.ic_stat_action_account_balance);
+        return builder.build();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mDBApi.getSession().authenticationSuccessful()) {
+            try {
+                // Required to complete auth, sets the access token on the session
+                mDBApi.getSession().finishAuthentication();
+
+                String accessToken = mDBApi.getSession().getOAuth2AccessToken();
+            } catch (IllegalStateException e) {
+                Log.i("DbAuthLog", "Error authenticating", e);
+            }
+        }
     }
 
     @Override
@@ -141,6 +215,7 @@ public class SecondActivity extends Activity {
                 }
             });
         }
+
         if (vanillaBtn != null) {
             vanillaBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -154,6 +229,7 @@ public class SecondActivity extends Activity {
                 }
             });
         }
+
         shareBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -166,7 +242,43 @@ public class SecondActivity extends Activity {
                 layoutHolder.buildDrawingCache();
                 savedBitmap = layoutHolder.getDrawingCache();
 
-                shareThis(savedBitmap);
+                // REPLACE THIS WITH DROPBOX
+
+                HandlerThread backgroundThread = new HandlerThread("background");
+                backgroundThread.start();
+
+                Looper looper = backgroundThread.getLooper();
+
+                backgroundHandler = new Handler(looper);
+
+                backgroundHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        File file = sendDropbox(savedBitmap);
+
+                        FileInputStream inputStream = null;
+                        try {
+                            inputStream = new FileInputStream(file);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+
+                        DropboxAPI.Entry response = null;
+                        try {
+                            response = mDBApi.putFile("/meme.jpeg", inputStream,
+                                    file.length(), null, null);
+                        } catch (DropboxException e) {
+                            e.printStackTrace();
+                        }
+                        Log.i("DbExampleLog", "The uploaded file's rev is: " + response.rev);
+
+                        Message message = Message.obtain(mainHandler, DROPBOX_FINISHED);
+                        mainHandler.sendMessage(message);
+                    }
+                });
+
+
 
                 shareBtn.setVisibility(View.VISIBLE);
                 saveBtn.setVisibility(View.VISIBLE);
@@ -176,6 +288,8 @@ public class SecondActivity extends Activity {
                 Toast.makeText(getBaseContext(),"SHARED",Toast.LENGTH_SHORT).show();
             }
         });
+
+
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -217,13 +331,44 @@ public class SecondActivity extends Activity {
         startActivity(Intent.createChooser(share, "Share Image"));
     }
 
-    public void saveThis(Bitmap receivedBitmap) {
+    public File sendDropbox(Bitmap receivedBitmap){
+
+        try {
+            dropFile = createBlankImageFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         ByteArrayOutputStream compressedOutputStream = new ByteArrayOutputStream();
 
         receivedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, compressedOutputStream);
 
         try {
-            FileOutputStream outputStream = new FileOutputStream(createBlankImageFile());
+            FileOutputStream outputStream = new FileOutputStream(dropFile);
+            outputStream.write(compressedOutputStream.toByteArray());
+            outputStream.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return dropFile;
+    }
+
+    public void saveThis(Bitmap receivedBitmap) {
+
+        File dropFile=null;
+        try {
+            dropFile = createBlankImageFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ByteArrayOutputStream compressedOutputStream = new ByteArrayOutputStream();
+
+        receivedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, compressedOutputStream);
+
+        try {
+            FileOutputStream outputStream = new FileOutputStream(dropFile);
             outputStream.write(compressedOutputStream.toByteArray());
             outputStream.close();
         }
@@ -250,6 +395,9 @@ public class SecondActivity extends Activity {
         mCurrentPhotoPath = "file:" + imageFile.getAbsolutePath();
         return imageFile;
     }
+
+
+
 
 }
 
