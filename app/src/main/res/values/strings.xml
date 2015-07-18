@@ -12,6 +12,7 @@
     <string name="demotivation">demotivation</string>
     <string name="vanilla">Vanilla</string>
     <string name="share_button">Share</string>
+    <string name="title_activity_template">TemplateActivity</string>
 
 
 </resources>

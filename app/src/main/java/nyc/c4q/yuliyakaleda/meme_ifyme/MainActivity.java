@@ -17,6 +17,7 @@ public class MainActivity extends Activity {
 
     private Button take;
     private Button choose;
+    private Button template;
     private Uri imageUri;
 
 
@@ -27,6 +28,7 @@ public class MainActivity extends Activity {
 
         take = (Button) findViewById(R.id.take);
         choose = (Button) findViewById(R.id.choose);
+        template = (Button) findViewById(R.id.template);
 
         setEventListener(true);
 
@@ -64,6 +66,7 @@ public class MainActivity extends Activity {
         if (!setFlag) {
             take.setOnClickListener(null);
             choose.setOnClickListener(null);
+            template.setOnClickListener(null);
         }
         else {
             take.setOnClickListener(new View.OnClickListener() {
@@ -83,6 +86,13 @@ public class MainActivity extends Activity {
                     intent.setAction(Intent.ACTION_GET_CONTENT);
                     Intent chooser = Intent.createChooser(intent, "Select Picture");
                     startActivityForResult(chooser, SELECT_PICTURE);
+                }
+            });
+            template.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getBaseContext(), TemplateActivity.class);
+                    startActivity(intent);
                 }
             });
         }
