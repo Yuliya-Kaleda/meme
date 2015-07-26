@@ -9,9 +9,10 @@
     <string name="bottom_text">add text</string>
     <string name="top_text">add text</string>
     <string name="share_via">Share Via</string>
-    <string name="demotivation">demotivation</string>
+    <string name="demotivational">demotivate</string>
     <string name="vanilla">Vanilla</string>
     <string name="share_button">Share</string>
+    <string name="save_button">SAVE</string>
 
 
 </resources>
